@@ -1,0 +1,67 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# ============================================
+# STAGE 1: Dependencies
+# ============================================
+FROM base AS deps
+
+COPY package.json package-lock.json* ./
+
+# Install ALL dependencies (including devDependencies for tests)
+RUN npm ci
+
+# ============================================
+# STAGE 2: Test (CI/CD target - production-ready)
+# This stage can run tests AND be promoted to production
+# ============================================
+FROM base AS test
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Copy dependencies (includes dev deps for testing)
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/package*.json ./
+
+# Copy application code
+COPY . .
+
+# Set ownership
+RUN chown -R appuser:appgroup /app
+
+# Can run as root for tests, switch to appuser for production
+# USER appuser
+
+# Environment can be overridden at runtime
+ENV NODE_ENV=production
+
+# Default command (can be overridden)
+# CI will run: docker run $IMAGE npm test
+# Production will run: docker run $IMAGE npm start
+CMD ["npm", "run", "start"]
+
+# ============================================
+# STAGE 3: Runner (Optional - pure production image)
+# Not used in your CI workflow, but available for manual builds
+# ============================================
+FROM base AS runner
+
+# Create non-root user
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Install ONLY production dependencies
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy application code
+COPY . .
+
+# Set ownership
+RUN chown -R appuser:appgroup /app
+
+USER appuser
+
+ENV NODE_ENV=production
+
+CMD ["npm", "run", "start"]
