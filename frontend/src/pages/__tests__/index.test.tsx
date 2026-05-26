@@ -8,9 +8,17 @@ import Home from '../index';
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
+type MockCardProps = {
+  card: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
 // Mock CardComponent
 jest.mock('../components/CardComponent', () => {
-  return function MockCardComponent({ card }: any) {
+  return function MockCardComponent({ card }: MockCardProps) {
     return (
       <div data-testid={`card-${card.id}`}>
         <div>ID: {card.id}</div>
