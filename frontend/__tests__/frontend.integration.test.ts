@@ -19,7 +19,7 @@ describe('Frontend Integration Tests - Real API', () => {
         await axios.get(`${API_URL}/test`);
         console.log('Backend is ready!');
         break;
-      } catch (error) {
+      } catch {
         retries--;
         if (retries === 0) throw new Error('Backend failed to start');
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -35,8 +35,8 @@ describe('Frontend Integration Tests - Real API', () => {
       for (const user of users) {
         await axios.delete(`${API_URL}/users/${user.id}`);
       }
-    } catch (error) {
-      console.log('No users to clean up',error);
+    } catch {
+      console.log('No users to clean up');
     }
   });
 
@@ -45,9 +45,8 @@ describe('Frontend Integration Tests - Real API', () => {
     if (testUserId) {
       try {
         await axios.delete(`${API_URL}/users/${testUserId}`);
-      } catch (error) {
+      } catch {
         // User might already be deleted
-        console.log('No users to clean up',error);
       }
     }
   });
@@ -116,9 +115,11 @@ describe('Frontend Integration Tests - Real API', () => {
       try {
         await axios.get(`${API_URL}/users/99999`);
         fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(404);
-        expect(error.response.data.message).toBe('User not found');
+      } catch (error: unknown) {
+          if (axios.isAxiosError(error) && error.response){
+            expect(error.response.status).toBe(404);
+            expect(error.response.data.message).toBe('User not found');
+          }
       }
     });
 
@@ -165,8 +166,10 @@ describe('Frontend Integration Tests - Real API', () => {
       try {
         await axios.get(`${API_URL}/users/${userId}`);
         fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(404);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response){
+            expect(error.response.status).toBe(404);
+          }
       }
     });
 
@@ -184,8 +187,10 @@ describe('Frontend Integration Tests - Real API', () => {
           email: 'duplicate@test.com'
         });
         fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(500); // Database constraint error
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response){
+            expect(error.response.status).toBe(500); // Database constraint error
+        }
       }
     });
   });
@@ -212,7 +217,8 @@ describe('Frontend Integration Tests - Real API', () => {
       const getAllResponse = await axios.get(`${API_URL}/users`);
       expect(getAllResponse.data.length).toBeGreaterThanOrEqual(2);
       
-      const userIds = getAllResponse.data.map((u: any) => u.id);
+      //const userIds = getAllResponse.data.map((u: any) => u.id);
+      const userIds = getAllResponse.data.map((u: {id: number}) => u.id);
       expect(userIds).toContain(user1Id);
       expect(userIds).toContain(user2Id);
 
@@ -229,8 +235,9 @@ describe('Frontend Integration Tests - Real API', () => {
 
       // 5. Verify final state
       const finalGetAllResponse = await axios.get(`${API_URL}/users`);
-      const finalUserIds = finalGetAllResponse.data.map((u: any) => u.id);
-      
+      //const finalUserIds = finalGetAllResponse.data.map((u: any) => u.id);
+      const finalUserIds = finalGetAllResponse.data.map((u: {id: number}) => u.id);
+
       expect(finalUserIds).toContain(user1Id);
       expect(finalUserIds).not.toContain(user2Id);
 
@@ -252,9 +259,11 @@ describe('Frontend Integration Tests - Real API', () => {
       try {
         await axios.get(`${API_URL}/users/invalid-id`);
         fail('Should have thrown an error');
-      } catch (error: any) {
-        // Should get some error response
-        expect(error.response).toBeDefined();
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)){
+          // Should get some error response
+          expect(error.response).toBeDefined();
+        }
       }
     });
 
@@ -265,8 +274,10 @@ describe('Frontend Integration Tests - Real API', () => {
           // Missing email
         });
         fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(500);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response){
+          expect(error.response.status).toBe(500);
+        }
       }
     });
 
@@ -277,8 +288,10 @@ describe('Frontend Integration Tests - Real API', () => {
           email: 'test@test.com'
         });
         fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(404);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response){
+          expect(error.response.status).toBe(404);
+        }
       }
     });
 
@@ -286,8 +299,10 @@ describe('Frontend Integration Tests - Real API', () => {
       try {
         await axios.delete(`${API_URL}/users/99999`);
         fail('Should have thrown an error');
-      } catch (error: any) {
-        expect(error.response.status).toBe(404);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response){
+          expect(error.response.status).toBe(404);
+        }
       }
     });
   });
