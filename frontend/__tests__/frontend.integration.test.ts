@@ -36,7 +36,7 @@ describe('Frontend Integration Tests - Real API', () => {
         await axios.delete(`${API_URL}/users/${user.id}`);
       }
     } catch (error) {
-      console.log('No users to clean up');
+      console.log('No users to clean up',error);
     }
   });
 
@@ -47,6 +47,7 @@ describe('Frontend Integration Tests - Real API', () => {
         await axios.delete(`${API_URL}/users/${testUserId}`);
       } catch (error) {
         // User might already be deleted
+        console.log('No users to clean up',error);
       }
     }
   });
