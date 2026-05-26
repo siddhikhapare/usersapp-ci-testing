@@ -21,13 +21,13 @@ export default function Home() {
       try {
         const response = await axios.get(`${apiUrl}/users`);
         setUsers(response.data.reverse());
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [apiUrl]);
 
   // Create user
   const createUser = async (e: React.FormEvent<HTMLFormElement>) => {
