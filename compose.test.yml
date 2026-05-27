@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: ${FRONTEND_TEST_IMAGE}
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://backend:4000
+    depends_on:
+      - backend
+
+  backend:
+    image: ${BACKEND_TEST_IMAGE}
+    ports:
+      - "4000:4000"
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=testdb
+      - POSTGRES_HOST=postgres
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=testdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  sut:
+    image: curlimages/curl
+    depends_on:
+      - frontend
+      - backend
+    command: >
+      sh -c "
+      sleep 10 &&
+      curl -f http://frontend:3000 &&
+      curl -f http://backend:4000/health
+      "
+
+volumes:
+  pgdata:
