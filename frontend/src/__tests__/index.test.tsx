@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
-import Home from '../index';
+import Home from '../pages/index';
 
 // Mock axios
 jest.mock('axios');
@@ -275,16 +275,26 @@ describe('Home Component', () => {
   });
 
   describe('API URL Configuration', () => {
+    // const originalApiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    // afterEach(() => {
+    //   if (originalApiUrl) {
+    //     process.env.NEXT_PUBLIC_API_URL = originalApiUrl;
+    //   } else {
+    //     delete process.env.NEXT_PUBLIC_API_URL;
+    //   }
+    // });
+
     it('should use environment variable for API URL', async () => {
       process.env.NEXT_PUBLIC_API_URL = 'http://test-api:5000';
 
       render(<Home />);
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://test-api:5000/users');
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+          'http://test-api:5000/users'
+        );
       });
-
-      delete process.env.NEXT_PUBLIC_API_URL;
     });
 
     it('should fallback to localhost when env var not set', async () => {
@@ -293,7 +303,9 @@ describe('Home Component', () => {
       render(<Home />);
 
       await waitFor(() => {
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:4000/users');
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+          'http://localhost:4000/users'
+        );
       });
     });
   });

@@ -31,7 +31,7 @@ const customJestConfig: Config = {
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
-    '<rootDir>/__tests__/', // integration tests — excluded from unit runs
+    // '<rootDir>/__tests__/', // integration tests — excluded from unit runs
   ],
 
   // ── Module aliases ────────────────────────────────────────────────────────
