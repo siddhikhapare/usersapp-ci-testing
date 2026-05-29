@@ -41,13 +41,13 @@ const customJestConfig: Config = {
   },
 
   // ── Coverage ──────────────────────────────────────────────────────────────
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/**/index.ts',    // barrel files — no logic to cover
   ],
-  coverageDirectory: 'coverage',
+  coverageDirectory: '/tmp/coverage',
   coverageProvider: 'v8',  // faster than babel coverage
 
   // ── Misc ─────────────────────────────────────────────────────────────────

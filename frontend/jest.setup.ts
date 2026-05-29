@@ -26,11 +26,11 @@ jest.mock('axios');
 
 // ── 4. window.location ───────────────────────────────────────────────────────
 // jsdom's location is read-only; redefine it so tests can set hostname/href.
-Object.defineProperty(window, 'location', {
-  value: {
-    hostname: 'localhost',
-    href: 'http://localhost:3000',
-    reload: jest.fn(),
-  },
-  writable: true,
-});
+// Object.defineProperty(window, 'location', {
+//   value: {
+//     hostname: 'localhost',
+//     href: 'http://localhost:3000',
+//     reload: jest.fn(),
+//   },
+//   writable: true,
+// });
