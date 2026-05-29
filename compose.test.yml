@@ -24,7 +24,7 @@ services:
       - postgres
 
   postgres:
-    image: postgres:latest
+    image: postgres:16-alpine
     environment:
       - POSTGRES_USER=test
       - POSTGRES_PASSWORD=test
@@ -33,16 +33,10 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   sut:
-    image: curlimages/curl
+    image: ${FRONTEND_IMAGE}
     depends_on:
-      - frontend
       - backend
-    command: >
-      sh -c "
-      sleep 10 &&
-      curl -f http://frontend:3000 &&
-      curl -f http://backend:4000/health
-      "
+    command: ["npm", "run", "test:integration"]
 
 volumes:
   pgdata:
