@@ -1,5 +1,5 @@
 import type { Config } from 'jest';
-import nextJest from 'next/jest';
+import nextJest from 'next/jest.js';
 
 // nextJest reads your next.config.js + .env files and configures
 // the transformer automatically — handles TSX, CSS modules, images, fonts
