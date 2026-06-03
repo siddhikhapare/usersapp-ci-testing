@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor,act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import axios from 'axios';
 import Home from '../pages/index';
@@ -299,9 +299,10 @@ describe('Home Component', () => {
 
     it('should fallback to localhost when env var not set', async () => {
       delete process.env.NEXT_PUBLIC_API_URL;
-
-      render(<Home />);
-
+      await act(async() =>{
+        render(<Home />);
+      })
+      
       await waitFor(() => {
         expect(mockedAxios.get).toHaveBeenCalledWith(
           'http://localhost:4000/users'
