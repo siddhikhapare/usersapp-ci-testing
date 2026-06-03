@@ -20,7 +20,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${apiUrl}/users`);
-        setUsers(response.data.reverse());
+        setUsers([...response.data].reverse());
       } catch (error: unknown) {
         console.error('Error fetching data:', error);
       }
