@@ -43,19 +43,25 @@ describe('Home Component', () => {
 
   describe('Rendering', () => {
     it('should render the page title', async () => {
-      render(<Home />);
+      await act(async () => {
+        render(<Home />);
+      })
       expect(screen.getByText('User Management App')).toBeInTheDocument();
     });
 
     it('should render create user form', async () => {
-      render(<Home />);
+      await act(async () => {
+        render(<Home />);
+      })
       expect(screen.getByPlaceholderText('Name')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Email')).toBeInTheDocument();
       expect(screen.getByText('Add User')).toBeInTheDocument();
     });
 
     it('should render update user form', async () => {
-      render(<Home />);
+      await act(async () => {
+        render(<Home />);
+      })
       expect(screen.getByPlaceholderText('User ID')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('New Name')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('New Email')).toBeInTheDocument();

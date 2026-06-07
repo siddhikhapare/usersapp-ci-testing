@@ -6,9 +6,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - API_URL=http://backend:4000
+      API_URL: http://backend:4000
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy 
+    command: ["node", "server.js"]
 
   backend:
     image: ${BACKEND_TEST_IMAGE}
