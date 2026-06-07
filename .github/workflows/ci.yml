@@ -234,7 +234,7 @@ jobs:
           - service: frontend
             test_command: npm test
           - service: backend
-            test_command: npm test
+            test_command: npm run test:unit
       fail-fast: false
 
     permissions:

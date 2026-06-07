@@ -2,18 +2,18 @@ const { Pool } = require('pg');
 const { getUsers, getUserById, createUser, updateUser, deleteUser } = require('./user');
 
 // Use test database configuration
-const testPool = new Pool({
-  user: process.env.POSTGRES_USER || 'myuser',
-  host: process.env.POSTGRES_HOST || 'localhost',
-  database: process.env.POSTGRES_DB || 'users_database',
-  password: process.env.POSTGRES_PASSWORD || 'passwd',
-  port: process.env.DB_PORT || 5432,
-});
+// const testPool = new Pool({
+//   user: process.env.POSTGRES_USER || 'myuser',
+//   host: process.env.POSTGRES_HOST || 'localhost',
+//   database: process.env.POSTGRES_DB || 'users_database',
+//   password: process.env.POSTGRES_PASSWORD || 'passwd',
+//   port: process.env.DB_PORT || 5432,
+// });
 
 describe('Backend Integration Tests', () => {
   beforeAll(async () => {
     // Create table if not exists
-    await testPool.query(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -24,14 +24,14 @@ describe('Backend Integration Tests', () => {
 
   beforeEach(async () => {
     // Clean database before each test
-    await testPool.query('DELETE FROM users');
-    await testPool.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
+    await pool.query('DELETE FROM users');
+    await pool.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
   });
 
   afterAll(async () => {
     // Clean up and close connection
-    await testPool.query('DELETE FROM users');
-    await testPool.end();
+    await pool.query('DELETE FROM users');
+    await pool.end();
   });
 
   describe('User CRUD Operations', () => {
@@ -113,13 +113,13 @@ describe('Backend Integration Tests', () => {
 
   describe('Database Connection', () => {
     it('should connect to database successfully', async () => {
-      const client = await testPool.connect();
+      const client = await pool.connect();
       expect(client).toBeDefined();
       client.release();
     });
 
     it('should execute query successfully', async () => {
-      const result = await testPool.query('SELECT NOW()');
+      const result = await pool.query('SELECT NOW()');
       expect(result.rows).toBeDefined();
       expect(result.rows.length).toBe(1);
     });

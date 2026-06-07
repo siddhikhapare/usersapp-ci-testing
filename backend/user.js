@@ -9,7 +9,8 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
-pool.connect()
+if(process.env.NODE_ENV !== 'test'){
+  pool.connect()
   .then(client => {
     console.log('Database connected successfully');
     client.release(); // Release the client back to the pool
@@ -17,6 +18,7 @@ pool.connect()
   .catch(err => {
     console.error('Error connecting to the database:', err.stack);
   });
+}
 
 const getUsers = async () => {
   const res = await pool.query('SELECT * FROM users ORDER BY id ASC');
