@@ -29,14 +29,35 @@ services:
       - POSTGRES_USER=test
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=testdb
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+    tmpfs:
+      - /var/lib/postgresql/data        # fresh DB every CI run, no leftover data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test -d testdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    # volumes:
+    #   - pgdata:/var/lib/postgresql/data
 
   sut:
-    image: ${FRONTEND_IMAGE}
+    image: ${BACKEND_TEST_IMAGE}        
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: testdb
+      DB_PORT: 5432
     depends_on:
-      - backend
+      postgres:
+        condition: service_healthy      # waits until pg_isready actually passes
     command: ["npm", "run", "test:integration"]
 
-volumes:
-  pgdata:
+  # sut:
+  #   image: ${FRONTEND_IMAGE}
+  #   depends_on:
+  #     - backend
+  #   command: ["npm", "run", "test:integration"]
+
+# volumes:
+#   pgdata:
