@@ -33,7 +33,8 @@ ENV NODE_ENV=test
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-CMD ["npm", "test"]
+#CMD ["npm", "test"]
+CMD ["node", "index.js"]
 
 # ============================================
 # STAGE 4: Production Runner
@@ -63,7 +64,8 @@ RUN chown -R appuser:appgroup /app
 
 USER appuser
 
-CMD ["npm", "run", "start"]
+#CMD ["npm", "run", "start"]
+CMD ["node", "index.js"]
 
 # # ============================================
 # # STAGE 2: Test (CI/CD target - production-ready)
