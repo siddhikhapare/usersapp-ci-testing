@@ -9,6 +9,10 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
+pool.on('error', (err) => {
+   console.error('Unexpected error on idle PostgreSQL client:', err.message); 
+});
+
 if(process.env.NODE_ENV !== 'test'){
   pool.connect()
   .then(client => {
