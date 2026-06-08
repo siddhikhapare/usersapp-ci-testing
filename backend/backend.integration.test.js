@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
-const { getUsers, getUserById, createUser, updateUser, deleteUser } = require('./user');
+//const { Pool } = require('pg');
+const { pool , getUsers, getUserById, createUser, updateUser, deleteUser } = require('./user');
 
 // Use test database configuration
 // const testPool = new Pool({
