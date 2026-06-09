@@ -311,12 +311,12 @@ jobs:
         run: |
           docker compose -f compose.test.yml run --rm backend-sut
       - name: Run frontend integration tests
-            run: |
-              docker compose -f compose.test.yml run --rm frontend-sut
+        run: |
+          docker compose -f compose.test.yml run --rm frontend-sut
       - name: Tear down compose services
-            if: always()
-            run: |
-              docker compose -f compose.test.yml down --volumes --remove-orphans
+        if: always()
+        run: |
+          docker compose -f compose.test.yml down --volumes --remove-orphans
 
       # - name: Run integration tests against runner images
       #   run: |
