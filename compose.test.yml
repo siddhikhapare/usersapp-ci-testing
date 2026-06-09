@@ -25,7 +25,8 @@ services:
       - POSTGRES_HOST=postgres
       - DB_PORT=5432
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy 
     command: ["node", "index.js"]  #[npm run start]
     stop_grace_period: 15s
     healthcheck:
@@ -62,7 +63,7 @@ services:
       DB_PORT: 5432
     depends_on:
       postgres:
-        condition: service_completed_successfully      # waits until pg_isready actually passes
+        condition: service_healthy      # waits until pg_isready actually passes
     command: ["npm", "run", "test:integration"]
 
   # sut:

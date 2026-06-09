@@ -26,8 +26,8 @@ process.on('SIGTERM', () => {
  
   server.close(async () => {
     try {
-      await pool.end();
-      //await userService.pool.end();
+      //await pool.end();
+      await userService.pool.end();
       console.log('Database pool closed');
     } catch (err) {
       console.error('Error closing pool:', err.message);
