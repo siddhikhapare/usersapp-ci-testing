@@ -290,7 +290,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Run integration tests using test images
+      - name: Export image variables
         run: |
           # ── Frontend test image ──────────────────────────────────────────────
           # compose frontend service: serves Next.js app (command override: node server.js)
@@ -303,9 +303,20 @@ jobs:
           # Both use the same test image — different commands in compose
           export BACKEND_TEST_IMAGE="${{ env.DOCKER_REGISTRY }}/backend-test:${{ github.sha }}"
  
-          docker compose -f compose.test.yml up \
-            --exit-code-from sut \
-            --abort-on-container-exit
+          # docker compose -f compose.test.yml up \
+          #   --exit-code-from sut \
+          #   --abort-on-container-exit
+
+      - name: Run backend integration tests
+        run: |
+          docker compose -f compose.test.yml run --rm backend-sut
+      - name: Run frontend integration tests
+            run: |
+              docker compose -f compose.test.yml run --rm frontend-sut
+      - name: Tear down compose services
+            if: always()
+            run: |
+              docker compose -f compose.test.yml down --volumes --remove-orphans
 
       # - name: Run integration tests against runner images
       #   run: |

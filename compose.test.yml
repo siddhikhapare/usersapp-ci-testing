@@ -53,7 +53,7 @@ services:
     # volumes:
     #   - pgdata:/var/lib/postgresql/data
 
-  sut:
+  backend-sut:
     image: ${BACKEND_TEST_IMAGE}        
     environment:
       POSTGRES_HOST: postgres
@@ -65,6 +65,18 @@ services:
       postgres:
         condition: service_healthy      # waits until pg_isready actually passes
     command: ["npm", "run", "test:integration"]
+
+  
+  frontend-sut:
+   image: ${FRONTEND_TEST_IMAGE}
+   environment:
+     API_URL: http://backend:4000
+   depends_on:
+     backend:
+       condition: service_healthy
+   # jest.integration.config.js picks up __tests__/**/*.test.ts
+   command: ["npm", "run", "test:integration"]
+   #command: ["npx", "jest", "--config", "jest.integration.config.js", "--forceExit"]
 
   # sut:
   #   image: ${FRONTEND_IMAGE}
