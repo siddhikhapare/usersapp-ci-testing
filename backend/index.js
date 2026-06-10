@@ -37,6 +37,10 @@ process.on('SIGTERM', () => {
   });
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
 // Test API
 app.get('/test', (req, res) => {
   try {
