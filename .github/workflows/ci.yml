@@ -210,14 +210,26 @@ jobs:
           provenance: false
           sbom: false
 
-      - name: Store runner image digest
-        id: digest
+      # - name: Store runner image digest
+      #   id: digest
+      #   run: |
+      #     if [[ "${{ matrix.service }}" == "frontend" ]]; then
+      #       echo "frontend-runner-digest=${{ steps.docker_build.outputs.digest }}" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "backend-runner-digest=${{ steps.docker_build.outputs.digest }}" >> $GITHUB_OUTPUT
+      #     fi
+      - name: Save digest to file
         run: |
-          if [[ "${{ matrix.service }}" == "frontend" ]]; then
-            echo "frontend-runner-digest=${{ steps.docker_build.outputs.digest }}" >> $GITHUB_OUTPUT
-          else
-            echo "backend-runner-digest=${{ steps.docker_build.outputs.digest }}" >> $GITHUB_OUTPUT
-          fi
+          mkdir -p /tmp/digests
+          echo "${{ steps.docker_build.outputs.digest }}" \
+            > /tmp/digests/${{ matrix.service }}-runner-digest.txt
+
+      - name: Upload digest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ matrix.service }}-runner       # unique per leg
+          path: /tmp/digests/${{ matrix.service }}-runner-digest.txt
+          retention-days: 3
 
 # ==========================================================
 # JOB 3: UNIT TESTS — fast feedback using test image only
@@ -411,14 +423,23 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Download digest artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: digest-${{ matrix.service }}-runner
+          path: /tmp/digests
+
       - name: Promote runner digest to production tags
         run: |
           # Resolve digest for this service
-          if [[ "${{ matrix.service }}" == "frontend" ]]; then
-            DIGEST="${{ needs.build-runner.outputs.frontend-runner-digest }}"
-          else
-            DIGEST="${{ needs.build-runner.outputs.backend-runner-digest }}"
-          fi
+          # if [[ "${{ matrix.service }}" == "frontend" ]]; then
+          #   DIGEST="${{ needs.build-runner.outputs.frontend-runner-digest }}"
+          # else
+          #   DIGEST="${{ needs.build-runner.outputs.backend-runner-digest }}"
+          # fi
+
+          # Read digest from file — guaranteed correct per service
+          DIGEST=$(cat /tmp/digests/${{ matrix.service }}-runner-digest.txt)
 
           # Source is the runner image by immutable digest — nothing is rebuilt
           SRC="${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}-runner@${DIGEST}"
