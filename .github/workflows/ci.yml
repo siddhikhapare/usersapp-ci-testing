@@ -295,13 +295,13 @@ jobs:
           # ── Frontend test image ──────────────────────────────────────────────
           # compose frontend service: serves Next.js app (command override: node server.js)
           # Uses :sha tag — same commit, immutable reference
-          echo FRONTEND_TEST_IMAGE="${{ env.DOCKER_REGISTRY }}/frontend-test:${{ github.sha }}"
+          echo "FRONTEND_TEST_IMAGE=${{ env.DOCKER_REGISTRY }}/frontend-test:${{ github.sha }}" >> $GITHUB_ENV
  
           # ── Backend test image ───────────────────────────────────────────────
           # compose backend service: serves Express API (command override: npm run start)
           # compose sut:             runs npm run test:integration (no command override)
           # Both use the same test image — different commands in compose
-          echo BACKEND_TEST_IMAGE="${{ env.DOCKER_REGISTRY }}/backend-test:${{ github.sha }}"
+          echo "BACKEND_TEST_IMAGE=${{ env.DOCKER_REGISTRY }}/backend-test:${{ github.sha }}" >> $GITHUB_ENV
  
           # docker compose -f compose.test.yml up \
           #   --exit-code-from sut \
