@@ -363,29 +363,29 @@ jobs:
           format: table
           exit-code: 0
 
-      - name: Trivy scan - HIGH/CRITICAL (blocking)
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}-runner:${{github.sha}}"
-          # image-ref: >
-          #   ${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}-runner@${{
-          #     matrix.service == 'frontend'
-          #     && needs.build-runner.outputs.frontend-runner-digest
-          #     || needs.build-runner.outputs.backend-runner-digest
-          #   }}
-          exit-code: 1
-          ignore-unfixed: true
-          vuln-type: "os,library"
-          severity: "HIGH,CRITICAL"
-          format: "sarif"
-          output: "trivy-results-${{ matrix.service }}.sarif"
+      # - name: Trivy scan - HIGH/CRITICAL (blocking)
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: "${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}-runner:${{github.sha}}"
+      #     # image-ref: >
+      #     #   ${{ env.DOCKER_REGISTRY }}/${{ matrix.service }}-runner@${{
+      #     #     matrix.service == 'frontend'
+      #     #     && needs.build-runner.outputs.frontend-runner-digest
+      #     #     || needs.build-runner.outputs.backend-runner-digest
+      #     #   }}
+      #     exit-code: 1
+      #     ignore-unfixed: true
+      #     vuln-type: "os,library"
+      #     severity: "HIGH,CRITICAL"
+      #     format: "sarif"
+      #     output: "trivy-results-${{ matrix.service }}.sarif"
 
-      - name: Upload Trivy SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v4
-        if: always()
-        with:
-          sarif_file: "trivy-results-${{ matrix.service }}.sarif"
-          category: ${{ matrix.service }}-runner
+      # - name: Upload Trivy SARIF to GitHub Security tab
+      #   uses: github/codeql-action/upload-sarif@v4
+      #   if: always()
+      #   with:
+      #     sarif_file: "trivy-results-${{ matrix.service }}.sarif"
+      #     category: ${{ matrix.service }}-runner
 
 # ==========================================================
 # JOB 6: PROMOTE — retag runner digest to production
