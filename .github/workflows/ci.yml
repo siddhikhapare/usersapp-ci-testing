@@ -218,6 +218,9 @@ jobs:
       #     else
       #       echo "backend-runner-digest=${{ steps.docker_build.outputs.digest }}" >> $GITHUB_OUTPUT
       #     fi
+      
+      # ── Write digest to a per-service file and upload as artifact ──────────
+      # Each matrix leg uploads its own artifact — no overwrite risk
       - name: Save digest to file
         run: |
           mkdir -p /tmp/digests
